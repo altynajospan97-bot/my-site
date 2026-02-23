@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Компьютерлік желілер - Интерактивті оқу құралы</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent: #0ea5e9;
+            --accent-glow: rgba(14, 165, 233, 0.3);
+            --bg: #020617;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 0% 0%, #1e1b4b 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, #0c4a6e 0%, transparent 50%);
+            color: #f1f5f9;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, .font-heading {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .glass-card {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .glass-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 30px var(--accent-glow);
+            transform: translateY(-5px);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #7dd3fc 0%, #38bdf8 50%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn-cyber {
+            position: relative;
+            background: var(--accent);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 16px;
+            font-weight: 700;
+            overflow: hidden;
+            transition: 0.3s;
+            box-shadow: 0 10px 20px -10px var(--accent);
+        }
+
+        .btn-cyber:hover {
+            box-shadow: 0 15px 30px -10px var(--accent);
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+
+        .page {
+            display: none;
+            padding: 2rem;
+            animation: pageEnter 0.6s ease-out forwards;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes pageEnter {
+            from { opacity: 0; transform: translateY(20px); filter: blur(10px); }
+            to { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+
+        .menu-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
+        }
+
+        .theory-img {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+            border-radius: 20px;
+            margin: 2rem 0;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .option-btn {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1.25rem;
+            border-radius: 16px;
+            text-align: left;
+            transition: 0.3s;
+        }
+
+        .option-btn:hover {
+            background: rgba(14, 165, 233, 0.1);
+            border-color: var(--accent);
+            padding-left: 1.75rem;
+        }
+
+        .game-item {
+            cursor: pointer;
+            padding: 1.5rem;
+            border-radius: 16px;
+            background: rgba(30, 41, 59, 0.6);
+            border: 2px solid transparent;
+            transition: 0.3s;
+        }
+
+        .game-item.selected {
+            border-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.2);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+        }
+
+        .game-item.matched {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: #22c55e;
+            opacity: 0.5;
+            cursor: default;
+        }
+
+        .grid-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(14, 165, 233, 0.03) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(14, 165, 233, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+        }
+
+        .chat-container {
+            height: 400px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent) transparent;
+        }
+
+        .message {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 16px;
+            max-width: 85%;
+        }
+
+        .user-message {
+            background: rgba(14, 165, 233, 0.2);
+            border: 1px solid rgba(14, 165, 233, 0.3);
+            margin-left: auto;
+        }
+
+        .ai-message {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .typing-dots span {
+            animation: blink 1.4s infinite both;
+        }
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes blink {
+            0% { opacity: 0.2; }
+            20% { opacity: 1; }
+            100% { opacity: 0.2; }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+
+    <!-- ТИТУЛДЫҚ БЕТ -->
+    <section id="landing" class="page active flex flex-col items-center justify-center text-center min-h-screen">
+        <div class="relative mb-8">
+            <div class="absolute -inset-4 bg-sky-500/20 blur-3xl rounded-full"></div>
+            <h1 class="relative text-7xl md:text-9xl font-black leading-none tracking-tighter uppercase">
+                NET<span class="text-sky-500">WORK</span><br>
+                <span class="gradient-text">ACADEMY</span>
+            </h1>
+        </div>
+        <p class="text-slate-400 text-xl max-w-lg mx-auto mb-12 font-light">Компьютерлік желілердің ішкі құрылымын заманауи интерактивті әдіспен меңгеріңіз.</p>
+        <button onclick="showPage('menu')" class="btn-cyber text-xl tracking-widest uppercase">Жүйеге кіру</button>
+    </section>
+
+    <!-- БАСТЫ МӘЗІР -->
+    <section id="menu" class="page max-w-7xl mx-auto py-20">
+        <header class="text-center mb-20">
+            <h2 class="text-5xl font-bold mb-4 tracking-tight">ОҚУ МОДУЛЬДЕРІ</h2>
+            <div class="w-24 h-1 bg-sky-500 mx-auto rounded-full"></div>
+        </header>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div onclick="showPage('theory-list')" class="glass-card p-10 cursor-pointer text-center group">
+                <div class="menu-icon group-hover:scale-110 transition-transform">📖</div>
+                <h3 class="text-2xl font-bold mb-2">Теория</h3>
+                <p class="text-slate-500 text-sm">Негізгі концепциялар базасы</p>
+            </div>
+            <div onclick="showPage('practice-levels')" class="glass-card p-10 cursor-pointer text-center group">
+                <div class="menu-icon group-hover:scale-110 transition-transform">⚙️</div>
+                <h3 class="text-2xl font-bold mb-2">Практика</h3>
+                <p class="text-slate-500 text-sm">Командалық жолмен жұмыс</p>
+            </div>
+            <div onclick="showPage('game-menu')" class="glass-card p-10 cursor-pointer text-center group">
+                <div class="menu-icon group-hover:scale-110 transition-transform">🎮</div>
+                <h3 class="text-2xl font-bold mb-2">Ойындар</h3>
+                <p class="text-slate-500 text-sm">Геймификацияланған тапсырмалар</p>
+            </div>
+            <div onclick="startQuiz()" class="glass-card p-10 cursor-pointer text-center group">
+                <div class="menu-icon group-hover:scale-110 transition-transform">⚡</div>
+                <h3 class="text-2xl font-bold mb-2">Тест</h3>
+                <p class="text-slate-500 text-sm">Білімді бағалау жүйесі</p>
+            </div>
+            <div onclick="showPage('ai-assistant')" class="glass-card p-10 cursor-pointer text-center group border-sky-500/30 border-2">
+                <div class="menu-icon group-hover:scale-110 transition-transform">🤖</div>
+                <h3 class="text-2xl font-bold mb-2 gradient-text">AI Көмекші</h3>
+                <p class="text-slate-500 text-sm">ЖИ-мен сөйлесу</p>
+            </div>
+            <div onclick="showPage('audio-lesson')" class="glass-card p-10 cursor-pointer text-center group">
+                <div class="menu-icon group-hover:scale-110 transition-transform">🎧</div>
+                <h3 class="text-2xl font-bold mb-2">Аудио сабақ</h3>
+                <p class="text-slate-500 text-sm">Аудио-дәрістер жинағы</p>
+            </div>
+            <div onclick="showPage('video')" class="glass-card p-10 cursor-pointer text-center group">
+                <div class="menu-icon group-hover:scale-110 transition-transform">🎥</div>
+                <h3 class="text-2xl font-bold mb-2">Бейнеролик</h3>
+                <p class="text-slate-500 text-sm">Көрнекі сабақтар</p>
+            </div>
+            <div onclick="showPage('feedback')" class="glass-card p-10 cursor-pointer text-center group">
+                <div class="menu-icon group-hover:scale-110 transition-transform">💬</div>
+                <h3 class="text-2xl font-bold mb-2">Пікір</h3>
+                <p class="text-slate-500 text-sm">Кері байланыс</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI ASSISTANT -->
+    <section id="ai-assistant" class="page max-w-4xl mx-auto py-12">
+        <button onclick="showPage('menu')" class="mb-12 text-sky-400 font-bold flex items-center gap-2">← Мәзірге</button>
+        <div class="glass-card p-8 md:p-12">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="w-12 h-12 bg-sky-500/20 rounded-full flex items-center justify-center">
+                    <span class="text-2xl">🤖</span>
+                </div>
+                <div>
+                    <h2 class="text-3xl font-bold gradient-text">AI Желілік Көмекші</h2>
+                    <p class="text-slate-500 text-sm">Компьютерлік желілер туралы кез келген сұрақ қойыңыз</p>
+                </div>
+            </div>
+
+            <div id="chat-box" class="chat-container mb-6 p-4 space-y-4">
+                <div class="message ai-message">Сәлем! Мен желілік технологиялар бойынша сіздің көмекшіңізбін. Қандай сұрағыңыз бар?</div>
+            </div>
+
+            <div class="relative">
+                <input type="text" id="ai-input" 
+                       class="w-full bg-slate-900/50 border border-slate-700 rounded-2xl p-4 pr-16 focus:border-sky-500 focus:outline-none transition-all" 
+                       placeholder="Мысалы: TCP мен UDP айырмашылығы неде?"
+                       onkeypress="if(event.key === 'Enter') sendMessage()">
+                <button onclick="sendMessage()" class="absolute right-4 top-1/2 -translate-y-1/2 text-sky-400 hover:text-sky-300 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ТЕОРИЯ ТІЗІМІ -->
+    <section id="theory-list" class="page max-w-5xl mx-auto py-12">
+        <button onclick="showPage('menu')" class="mb-12 text-sky-400 font-bold flex items-center gap-3 group">
+            <span class="p-2 bg-sky-500/10 rounded-lg group-hover:bg-sky-500/20">←</span> Басты мәзір
+        </button>
+        <h2 class="text-5xl font-bold mb-12 gradient-text">Білім базасы</h2>
+        
+        <div class="grid gap-6">
+            <div onclick="openTheory('topic1')" class="glass-card p-8 cursor-pointer flex items-center gap-8 group">
+                <div class="w-32 h-32 rounded-2xl overflow-hidden shrink-0">
+                    <img src="https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="Желілер">
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold mb-2">1. Желілер классификациясы</h3>
+                    <p class="text-slate-400">PAN, LAN, MAN, WAN архитектурасының ерекшеліктері.</p>
+                </div>
+            </div>
+            <div onclick="openTheory('topic2')" class="glass-card p-8 cursor-pointer flex items-center gap-8 group">
+                <div class="w-32 h-32 rounded-2xl overflow-hidden shrink-0">
+                    <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="Топология">
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold mb-2">2. Желілік топологиялар</h3>
+                    <p class="text-slate-400">Физикалық және логикалық құрылым схемалары.</p>
+                </div>
+            </div>
+            <div onclick="openTheory('topic3')" class="glass-card p-8 cursor-pointer flex items-center gap-8 group">
+                <div class="w-32 h-32 rounded-2xl overflow-hidden shrink-0">
+                    <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="OSI моделі">
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold mb-2">3. OSI моделінің 7 деңгейі</h3>
+                    <p class="text-slate-400">Желілік хаттамалардың стандартты деңгейлері.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ТЕОРИЯ МАЗМҰНЫ -->
+    <section id="theory-content" class="page max-w-4xl mx-auto py-12">
+        <button onclick="showPage('theory-list')" class="mb-12 px-8 py-3 bg-slate-800 rounded-xl text-sky-400 font-bold hover:bg-slate-700 transition-all">← Тізімге оралу</button>
+        <div id="content-area" class="prose prose-invert lg:prose-xl max-w-none text-slate-300 leading-relaxed">
+            <!-- Content loaded dynamically -->
+        </div>
+    </section>
+
+    <!-- ПРАКТИКА -->
+    <section id="practice-levels" class="page max-w-4xl mx-auto py-12">
+        <button onclick="showPage('menu')" class="mb-12 text-emerald-400 font-bold flex items-center gap-2">← Кері</button>
+        <h2 class="text-5xl font-bold mb-12 text-emerald-400">Практикалық жұмыс</h2>
+        <div class="grid gap-8">
+            <div class="glass-card p-10 border-l-8 border-emerald-500 relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl">01</div>
+                <h3 class="text-2xl font-bold mb-4">№1 Тапсырма: Жеке IP</h3>
+                <p class="text-slate-300 mb-6">Өз компьютеріңіздің желілік параметрлерін тексеріңіз.</p>
+                <div class="bg-black/60 p-4 rounded-xl font-mono text-emerald-400 border border-emerald-500/20">
+                    > ipconfig
+                </div>
+            </div>
+            <div class="glass-card p-10 border-l-8 border-amber-500 relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl">02</div>
+                <h3 class="text-2xl font-bold mb-4">№2 Тапсырма: Ping тексеру</h3>
+                <p class="text-slate-300 mb-6">Байланыс сапасын тексеру үшін команданы орындаңыз.</p>
+                <div class="bg-black/60 p-4 rounded-xl font-mono text-amber-400 border border-amber-500/20">
+                    > ping 8.8.8.8
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ОЙЫНДАР МӘЗІРІ -->
+    <section id="game-menu" class="page max-w-5xl mx-auto py-12 text-center">
+        <button onclick="showPage('menu')" class="mb-12 text-purple-400 font-bold">← Кері</button>
+        <h2 class="text-5xl font-bold mb-16 text-purple-400">ОЙЫН АЛАҢЫ</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div onclick="startMatchGame()" class="glass-card p-12 cursor-pointer border-b-8 border-purple-500 group">
+                <div class="text-6xl mb-6 group-hover:rotate-12 transition-transform">🧩</div>
+                <h3 class="text-3xl font-bold mb-4">Сәйкестікті тап</h3>
+                <p class="text-slate-400">Терминдер мен анықтамаларды жұптастырыңыз.</p>
+            </div>
+            <div onclick="startArchitectGame()" class="glass-card p-12 cursor-pointer border-b-8 border-indigo-500 group">
+                <div class="text-6xl mb-6 group-hover:-rotate-12 transition-transform">🏗️</div>
+                <h3 class="text-3xl font-bold mb-4">Желі Архитекторы</h3>
+                <p class="text-slate-400">Сценарийлер бойынша дұрыс шешім таңдаңыз.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- СӘЙКЕСТЕНДІРУ ОЙЫНЫ -->
+    <section id="game-match" class="page max-w-5xl mx-auto py-12">
+        <button onclick="showPage('game-menu')" class="mb-12 text-purple-400 font-bold">← Ойындарға оралу</button>
+        <div class="glass-card p-10">
+            <h3 id="match-status" class="text-2xl font-bold mb-8 text-center text-purple-300">Барлық жұптарды табыңыз</h3>
+            <div class="grid grid-cols-2 gap-10">
+                <div id="terms-column" class="space-y-4"></div>
+                <div id="defs-column" class="space-y-4"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- АРХИТЕКТОР ОЙЫНЫ -->
+    <section id="game-architect" class="page max-w-4xl mx-auto py-12">
+        <button onclick="showPage('game-menu')" class="mb-12 text-indigo-400 font-bold">← Ойындарға оралу</button>
+        <div class="glass-card p-12 text-center">
+            <div class="w-20 h-20 bg-indigo-500/20 rounded-full flex items-center justify-center mx-auto mb-8">
+                <span class="text-4xl">🤖</span>
+            </div>
+            <p id="arch-scenario" class="text-2xl font-bold mb-12 text-slate-200"></p>
+            <div id="arch-options" class="flex flex-wrap justify-center gap-6"></div>
+            <p id="arch-feedback" class="mt-12 text-xl font-bold text-sky-400"></p>
+        </div>
+    </section>
+
+    <!-- ТЕСТ -->
+    <section id="quiz" class="page max-w-3xl mx-auto py-12">
+        <div id="quiz-ui">
+            <div class="flex justify-between items-center mb-10">
+                <button onclick="showPage('menu')" class="text-amber-500 font-bold uppercase tracking-widest">← Шығу</button>
+                <div class="px-6 py-2 bg-amber-500/10 border border-amber-500/30 rounded-full text-amber-500 font-mono" id="quiz-counter"></div>
+            </div>
+            <div class="glass-card p-12" id="quiz-container">
+                <h3 id="quiz-question" class="text-3xl font-bold mb-12 leading-tight"></h3>
+                <div id="quiz-options" class="grid gap-6"></div>
+            </div>
+        </div>
+        <div id="quiz-results" class="hidden glass-card p-16 text-center">
+            <div class="text-7xl mb-8">🏆</div>
+            <h2 class="text-5xl font-bold mb-6">Сынақ аяқталды</h2>
+            <p id="final-score" class="text-4xl font-black text-amber-500 mb-12"></p>
+            <button onclick="showPage('menu')" class="btn-cyber w-full md:w-auto">Мәзірге оралу</button>
+        </div>
+    </section>
+
+    <!-- АУДИО -->
+    <section id="audio-lesson" class="page max-w-xl mx-auto py-24 text-center">
+        <button onclick="showPage('menu')" class="mb-12 text-cyan-400 font-bold">← Артқа</button>
+        <div class="glass-card p-12">
+            <div class="w-24 h-24 bg-cyan-500/10 rounded-full flex items-center justify-center mx-auto mb-8">
+                <span class="text-5xl animate-pulse">🎙️</span>
+            </div>
+            <h3 class="text-2xl font-bold mb-8">Дәрісті тыңдаңыз</h3>
+            <audio controls class="w-full h-12 brightness-110">
+                <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+            </audio>
+            <p class="text-slate-500 mt-6 text-sm">Желілер негіздері туралы 15 минуттық аудио-шолу.</p>
+        </div>
+    </section>
+
+    <!-- ВИДЕО -->
+    <section id="video" class="page max-w-5xl mx-auto py-12">
+        <button onclick="showPage('menu')" class="mb-12 text-rose-500 font-bold">← Артқа</button>
+        <div class="glass-card overflow-hidden shadow-2xl">
+            <div class="p-4 bg-slate-800 flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                <span class="text-xs text-slate-400 ml-4 font-mono">VIDEO_PLAYER: v1.0.4</span>
+            </div>
+            <iframe class="w-full aspect-video" src="https://www.youtube.com/embed/gjKUvnqctA0" frameborder="0" allowfullscreen></iframe>
+        </div>
+    </section>
+
+    <!-- КЕРІ БАЙЛАНЫС -->
+    <section id="feedback" class="page max-w-2xl mx-auto py-12">
+        <button onclick="showPage('menu')" class="mb-12 text-pink-400 font-bold">← Кері</button>
+        <div class="glass-card p-12">
+            <h2 class="text-4xl font-bold mb-6 gradient-text">Кері байланыс</h2>
+            <p class="text-slate-400 mb-10">Оқу құралын жақсарту бойынша өз ойыңызбен бөлісіңіз.</p>
+            
+            <form id="feedback-form" class="space-y-8" onsubmit="handleFeedback(event)">
+                <div class="space-y-2">
+                    <label class="text-xs uppercase tracking-widest text-slate-500 font-bold">Пайдаланушы аты</label>
+                    <input type="text" required class="w-full bg-slate-900/50 border border-slate-700 rounded-2xl p-4 focus:border-sky-500 focus:outline-none transition-all">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-xs uppercase tracking-widest text-slate-500 font-bold">Хабарлама мазмұны</label>
+                    <textarea required rows="4" class="w-full bg-slate-900/50 border border-slate-700 rounded-2xl p-4 focus:border-sky-500 focus:outline-none transition-all" placeholder="Өз ұсынысыңызды қалдырыңыз..."></textarea>
+                </div>
+                <button type="submit" class="w-full py-5 rounded-2xl bg-gradient-to-r from-sky-600 to-indigo-600 font-bold uppercase tracking-widest hover:brightness-110 shadow-lg shadow-sky-600/20 transition-all">Мәліметтерді жолдау</button>
+            </form>
+
+            <div id="feedback-success" class="hidden text-center py-10">
+                <div class="text-6xl mb-6">🛰️</div>
+                <h3 class="text-3xl font-bold mb-4">Сәтті жіберілді!</h3>
+                <p class="text-slate-400 mb-8">Сіздің пікіріңіз базаға енгізілді. Рақмет!</p>
+                <button onclick="resetFeedback()" class="text-sky-400 hover:underline">Жаңа хабарлама</button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const apiKey = ""; // Gemini API Key will be handled by the environment
+
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        // AI ASSISTANT LOGIC
+        async function sendMessage() {
+            const input = document.getElementById('ai-input');
+            const chatBox = document.getElementById('chat-box');
+            const text = input.value.trim();
+
+            if (!text) return;
+
+            // Add user message
+            const userDiv = document.createElement('div');
+            userDiv.className = 'message user-message';
+            userDiv.innerText = text;
+            chatBox.appendChild(userDiv);
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Add loading indicator
+            const aiDiv = document.createElement('div');
+            aiDiv.className = 'message ai-message';
+            aiDiv.innerHTML = '<div class="typing-dots"><span>.</span><span>.</span><span>.</span></div>';
+            chatBox.appendChild(aiDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: text }] }],
+                        systemInstruction: { parts: [{ text: "Сен компьютерлік желілер бойынша эксперт көмекшісің. Жауаптарыңды қазақ тілінде, нақты әрі түсінікті етіп бер. Егер сұрақ компьютерлік желілерге қатысты болмаса, сыпайы түрде тек осы тақырып бойынша көмектесе алатыныңды ескерт." }] }
+                    })
+                });
+
+                const data = await response.json();
+                const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || "Кешіріңіз, жауап алу кезінде қате шықты.";
+                aiDiv.innerText = aiText;
+            } catch (error) {
+                aiDiv.innerText = "Қате: Жүйеге қосылу мүмкін болмады.";
+                console.error(error);
+            }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        const theoryData = {
+            topic1: { 
+                title: "Желілер классификациясы", 
+                content: `
+                    <h1 class="text-4xl font-black text-sky-400 mb-8 uppercase tracking-tighter">Желі түрлері</h1>
+                    <div class="space-y-12">
+                        <div class="glass-card p-8 bg-slate-900/40">
+                            <img src="https://images.unsplash.com/photo-1510511459019-5dee224ffb8b?auto=format&fit=crop&w=1200&q=80" class="theory-img mt-0" alt="PAN Желі">
+                            <h3 class="text-3xl font-bold text-sky-300 mb-4">PAN (Personal Area Network)</h3>
+                            <p class="text-lg">Жеке адамның айналасындағы (10 метрге дейін) құрылғыларды біріктіретін желі. Bluetooth арқылы жалғанған құлаққап немесе сағат - ең жақсы мысал.</p>
+                        </div>
+                        <div class="glass-card p-8 bg-slate-900/40">
+                            <img src="https://images.unsplash.com/photo-1551703599-6b3e8c7eef12?auto=format&fit=crop&w=1200&q=80" class="theory-img mt-0" alt="LAN Желі">
+                            <h3 class="text-3xl font-bold text-emerald-400 mb-4">LAN (Local Area Network)</h3>
+                            <p class="text-lg">Жергілікті желі бір кеңсе немесе ғимарат ішіндегі компьютерлерді жоғары жылдамдықты кабельдер (Ethernet) немесе Wi-Fi арқылы біріктіреді.</p>
+                        </div>
+                        <div class="glass-card p-8 bg-slate-900/40">
+                            <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80" class="theory-img mt-0" alt="WAN Желі">
+                            <h3 class="text-3xl font-bold text-rose-400 mb-4">WAN (Wide Area Network)</h3>
+                            <p class="text-lg">Мемлекеттер мен континенттерді қамтитын ғаламдық желі. Интернет - бұл бүкіл әлемдегі миллиардтаған LAN желілерін біріктіретін ең үлкен WAN.</p>
+                        </div>
+                    </div>
+                ` 
+            },
+            topic2: { 
+                title: "Желілік топологиялар", 
+                content: `
+                    <h1 class="text-4xl font-black text-sky-400 mb-8 uppercase tracking-tighter">Топология түрлері</h1>
+                    <p class="text-xl mb-10">Топология — желідегі компьютерлердің бір-бірімен физикалық түрде қосылу схемасы.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="glass-card p-8 border-t-4 border-sky-500">
+                            <h4 class="text-2xl font-bold mb-4">Шина (Bus)</h4>
+                            <p>Барлық түйіндер бір ортақ кабельге қосылады. Егер кабель үзілсе, бүкіл желі жұмысын тоқтатады.</p>
+                        </div>
+                        <div class="glass-card p-8 border-t-4 border-indigo-500">
+                            <h4 class="text-2xl font-bold mb-4">Жұлдызша (Star)</h4>
+                            <p>Қазіргі кездегі ең танымал түрі. Орталықта Switch орналасады, барлық құрылғылар соған жеке қосылады.</p>
+                        </div>
+                        <div class="glass-card p-8 border-t-4 border-emerald-500">
+                            <h4 class="text-2xl font-bold mb-4">Сақина (Ring)</h4>
+                            <p>Мәліметтер шеңбер бойымен тек бір бағытта қозғалады. Әр компьютер ретранслятор ретінде қызмет етеді.</p>
+                        </div>
+                        <div class="glass-card p-8 border-t-4 border-amber-500">
+                            <h4 class="text-2xl font-bold mb-4">Ағаш (Tree)</h4>
+                            <p>Күрделі желілерде қолданылатын деңгейлі жұлдызша топологияларының жиынтығы.</p>
+                        </div>
+                    </div>
+                ` 
+            },
+            topic3: { 
+                title: "OSI моделі", 
+                content: `
+                    <h1 class="text-4xl font-black text-sky-400 mb-8 uppercase tracking-tighter">OSI 7 деңгейі</h1>
+                    <div class="space-y-4">
+                        <div class="p-6 bg-sky-950/40 border-r-8 border-sky-400 rounded-2xl flex items-center justify-between">
+                            <span class="text-3xl font-black opacity-30">07</span>
+                            <span class="text-xl font-bold">Қолданбалы (Application)</span>
+                            <span class="text-xs bg-sky-500/20 px-3 py-1 rounded">HTTP, FTP</span>
+                        </div>
+                        <div class="p-6 bg-indigo-950/40 border-r-8 border-indigo-400 rounded-2xl flex items-center justify-between">
+                            <span class="text-3xl font-black opacity-30">06</span>
+                            <span class="text-xl font-bold">Өкілеттілік (Presentation)</span>
+                            <span class="text-xs bg-indigo-500/20 px-3 py-1 rounded">SSL, JPEG</span>
+                        </div>
+                        <div class="p-6 bg-blue-950/40 border-r-8 border-blue-400 rounded-2xl flex items-center justify-between">
+                            <span class="text-3xl font-black opacity-30">05</span>
+                            <span class="text-xl font-bold">Сеанстық (Session)</span>
+                            <span class="text-xs bg-blue-500/20 px-3 py-1 rounded">NetBIOS</span>
+                        </div>
+                        <div class="p-6 bg-emerald-950/40 border-r-8 border-emerald-400 rounded-2xl flex items-center justify-between">
+                            <span class="text-3xl font-black opacity-30">04</span>
+                            <span class="text-xl font-bold">Көліктік (Transport)</span>
+                            <span class="text-xs bg-emerald-500/20 px-3 py-1 rounded">TCP, UDP</span>
+                        </div>
+                        <div class="p-6 bg-amber-950/40 border-r-8 border-amber-400 rounded-2xl flex items-center justify-between">
+                            <span class="text-3xl font-black opacity-30">03</span>
+                            <span class="text-xl font-bold">Желілік (Network)</span>
+                            <span class="text-xs bg-amber-500/20 px-3 py-1 rounded">IP, ICMP</span>
+                        </div>
+                        <div class="p-6 bg-slate-800/40 border-r-8 border-slate-400 rounded-2xl flex items-center justify-between">
+                            <span class="text-3xl font-black opacity-30">02</span>
+                            <span class="text-xl font-bold">Арналық (Data Link)</span>
+                            <span class="text-xs bg-slate-500/20 px-3 py-1 rounded">MAC, ARP</span>
+                        </div>
+                        <div class="p-6 bg-slate-800/20 border-r-8 border-slate-500 rounded-2xl flex items-center justify-between">
+                            <span class="text-3xl font-black opacity-30">01</span>
+                            <span class="text-xl font-bold">Физикалық (Physical)</span>
+                            <span class="text-xs bg-slate-500/10 px-3 py-1 rounded">Cable, Hub</span>
+                        </div>
+                    </div>
+                ` 
+            }
+        };
+
+        function openTheory(k) {
+            document.getElementById('content-area').innerHTML = theoryData[k].content;
+            showPage('theory-content');
+        }
+
+        function handleFeedback(e) {
+            e.preventDefault();
+            document.getElementById('feedback-form').classList.add('hidden');
+            document.getElementById('feedback-success').classList.remove('hidden');
+        }
+
+        function resetFeedback() {
+            document.getElementById('feedback-form').reset();
+            document.getElementById('feedback-form').classList.remove('hidden');
+            document.getElementById('feedback-success').classList.add('hidden');
+        }
+
+        // GAME: MATCHING
+        const matchPairs = [
+            { t: "LAN", d: "Жергілікті желі" },
+            { t: "IP", d: "Желілік мекенжай" },
+            { t: "Router", d: "Бағыттаушы" },
+            { t: "WAN", d: "Ғаламдық желі" },
+            { t: "MAC", d: "Физикалық мекенжай" }
+        ];
+        let selTerm = null, selDef = null, matches = 0;
+
+        function startMatchGame() {
+            showPage('game-match');
+            matches = 0; selTerm = null; selDef = null;
+            document.getElementById('match-status').innerText = "Терминдер мен анықтамаларды жұптастырыңыз";
+            const tCol = document.getElementById('terms-column');
+            const dCol = document.getElementById('defs-column');
+            tCol.innerHTML = ''; dCol.innerHTML = '';
+            
+            [...matchPairs].sort(() => Math.random() - 0.5).forEach(p => {
+                const el = document.createElement('div');
+                el.className = 'game-item'; el.innerText = p.t;
+                el.onclick = () => { 
+                    if(el.classList.contains('matched')) return;
+                    document.querySelectorAll('#terms-column .game-item').forEach(i => i.classList.remove('selected'));
+                    el.classList.add('selected'); selTerm = p; checkMatch(); 
+                };
+                tCol.appendChild(el);
+            });
+            [...matchPairs].sort(() => Math.random() - 0.5).forEach(p => {
+                const el = document.createElement('div');
+                el.className = 'game-item'; el.innerText = p.d;
+                el.onclick = () => { 
+                    if(el.classList.contains('matched')) return;
+                    document.querySelectorAll('#defs-column .game-item').forEach(i => i.classList.remove('selected'));
+                    el.classList.add('selected'); selDef = p; checkMatch(); 
+                };
+                dCol.appendChild(el);
+            });
+        }
+
+        function checkMatch() {
+            if(selTerm && selDef) {
+                if(selTerm.t === selDef.t) {
+                    document.querySelectorAll('.selected').forEach(i => {
+                        i.classList.remove('selected');
+                        i.classList.add('matched');
+                    });
+                    matches++;
+                    if(matches === matchPairs.length) {
+                        document.getElementById('match-status').innerText = "Құттықтаймыз! Барлығы дұрыс. 🥳";
+                    }
+                } else {
+                    setTimeout(() => {
+                        document.querySelectorAll('.selected').forEach(i => i.classList.remove('selected'));
+                    }, 500);
+                }
+                selTerm = null; selDef = null;
+            }
+        }
+
+        // GAME: ARCHITECT
+        const archTasks = [
+            { s: "Бір кеңсе ішіндегі 15 компьютерді ең сенімді әрі басқаруға ыңғайлы етіп қалай біріктіреміз?", o: ["Bus (Шина)", "Star (Жұлдызша)"], c: "Star (Жұлдызша)" },
+            { s: "Нұр-Сұлтан мен Алматы қаласындағы екі офисті ортақ бір желіге қосу үшін қай түрін таңдаймыз?", o: ["LAN", "WAN"], c: "WAN" },
+            { s: "Егер кабель үзілгенде бүкіл желінің істен шығуын қаламасақ, қай топологиядан қашқан жөн?", o: ["Шина", "Жұлдызша"], c: "Шина" }
+        ];
+        let archIdx = 0;
+
+        function startArchitectGame() {
+            archIdx = 0; 
+            document.getElementById('arch-feedback').innerText = "";
+            showPage('game-architect'); 
+            loadArch();
+        }
+
+        function loadArch() {
+            const t = archTasks[archIdx];
+            document.getElementById('arch-scenario').innerText = t.s;
+            const opts = document.getElementById('arch-options');
+            opts.innerHTML = '';
+            t.o.forEach(o => {
+                const b = document.createElement('button');
+                b.className = 'btn-cyber bg-slate-800 border border-slate-700';
+                b.innerText = o;
+                b.onclick = () => {
+                    if(o === t.c) {
+                        archIdx++;
+                        if(archIdx < archTasks.length) loadArch();
+                        else {
+                            document.getElementById('arch-options').innerHTML = '';
+                            document.getElementById('arch-scenario').innerText = "Керемет!";
+                            document.getElementById('arch-feedback').innerText = "Сіз желі архитектурасы бойынша сынақтан өттіңіз! 🏆";
+                        }
+                    } else {
+                        document.getElementById('arch-feedback').innerText = "Қате! Бұл топологияның кемшіліктерін ескеріңіз.";
+                    }
+                };
+                opts.appendChild(b);
+            });
+        }
+
+        // QUIZ LOGIC
+        const quizData = [
+            { q: "Ауқымы бойынша ең үлкен желі түрі қайсы?", a: ["PAN", "WAN", "LAN", "MAN"], c: 1 },
+            { q: "OSI моделінің 4-ші (Көліктік) деңгейіндегі негізгі хаттама?", a: ["IP", "HTTP", "TCP", "Ethernet"], c: 2 },
+            { q: "Орталық хаб немесе коммутаторды қолданатын топология?", a: ["Bus", "Star", "Ring", "Mesh"], c: 1 },
+            { q: "IP мекенжай OSI-дің қай деңгейіне жатады?", a: ["Арналық", "Физикалық", "Желілік", "Қолданбалы"], c: 2 },
+            { q: "Bluetooth арқылы құрылған желі түрі?", a: ["PAN", "LAN", "WAN", "Internet"], c: 0 }
+        ];
+        let curQ = 0, score = 0;
+
+        function startQuiz() {
+            curQ = 0; score = 0; showPage('quiz');
+            document.getElementById('quiz-ui').classList.remove('hidden');
+            document.getElementById('quiz-results').classList.add('hidden');
+            loadQ();
+        }
+
+        function loadQ() {
+            const d = quizData[curQ];
+            document.getElementById('quiz-counter').innerText = `${curQ + 1} / ${quizData.length}`;
+            document.getElementById('quiz-question').innerText = d.q;
+            const opts = document.getElementById('quiz-options');
+            opts.innerHTML = '';
+            d.a.forEach((o, i) => {
+                const b = document.createElement('button');
+                b.className = 'option-btn font-bold';
+                b.innerText = o;
+                b.onclick = () => {
+                    if(i === d.c) score++;
+                    curQ++;
+                    if(curQ < quizData.length) loadQ();
+                    else showRes();
+                };
+                opts.appendChild(b);
+            });
+        }
+
+        function showRes() {
+            document.getElementById('quiz-ui').classList.add('hidden');
+            document.getElementById('quiz-results').classList.remove('hidden');
+            document.getElementById('final-score').innerText = `${score} / ${quizData.length}`;
+        }
+    </script>
+</body>
+</html>
